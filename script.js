@@ -281,18 +281,38 @@ Berikan analisis mendalam untuk SETIAP kata dengan format persis seperti ini (WA
 PENTING: Selesaikan analisis SEMUA kata hingga poin 11. Jangan potong di tengah. Gunakan Bahasa Indonesia yang mudah dipahami santri.`;
 
        // Ganti dengan URL Vercel kamu (contoh: https://amogenz.vercel.app/api/analyze)
-        const VERCEL_PROXY_URL = "https://nahwu-ai-git-main-ammos-projects-0b62d4a2.vercel.app/api/analyze";
+        // --- AUTO DETECT: Production vs Local (Acode/localhost) ---
+const isLocal = location.hostname === 'localhost' 
+    || location.hostname === '127.0.0.1' 
+    || location.protocol === 'file:';
 
-            // Panggil Proxy Vercel, bukan Groq langsung
-            const resp = await fetch(VERCEL_PROXY_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    prompt: prompt // Kita hanya kirim prompt, API Key sudah diurus Vercel
-                })
-            });
+let resp;
+if (isLocal) {
+    // ACODE / LOCAL: Panggil Groq langsung (hardcode key untuk dev only)
+    const GROQ_API_KEY_LOCAL = "gsk_XXXXXXXXXXXXXXXXXXXXXXXX"; // ← ganti API key kamu di sini
+    resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${GROQ_API_KEY_LOCAL}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.1,
+            max_tokens: 7000,
+            stream: true
+        })
+    });
+} else {
+    // PRODUCTION: Pakai proxy Vercel (API key aman di server)
+    const VERCEL_PROXY_URL = "https://nahwu-ai.amogenz.xyz/api/analyze";
+    resp = await fetch(VERCEL_PROXY_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: prompt })
+    });
+}
 
 
             if (!resp.ok) throw new Error("Gagal terhubung ke AI. Coba lagi.");
