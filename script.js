@@ -303,9 +303,6 @@ PENTING: Selesaikan analisis SEMUA kata hingga poin 11. Jangan potong di tengah.
             document.getElementById('result-source-badge').className = 'source-badge badge-ai';
             document.getElementById('result-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            const reader = resp.body.getReader();
-            const decoder = new TextDecoder();
-            let cumulative = '';
 
             const reader = resp.body.getReader();
             const decoder = new TextDecoder();
