@@ -306,7 +306,7 @@ if (isLocal) {
     });
 } else {
     // PRODUCTION: Pakai proxy Vercel (API key aman di server)
-    const VERCEL_PROXY_URL = "https://nahwu-ai.amogenz.xyz/api/analyze";
+    const VERCEL_PROXY_URL = "https://ai-nahwu.amogenz.xyz/api/analyze";
     resp = await fetch(VERCEL_PROXY_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
