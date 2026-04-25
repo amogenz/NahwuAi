@@ -1,10 +1,10 @@
+// api/analyze.js
 export default async function handler(req, res) {
-    // 1. Atur Header CORS agar bisa dipanggil dari mana saja (Acode/Localhost/Web)
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    // Izinkan domain spesifik kamu atau gunakan '*' untuk semua (termasuk Acode)
+    res.setHeader('Access-Control-Allow-Origin', '*'); 
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    // Handle preflight request (OPTIONS)
     if (req.method === 'OPTIONS') {
         res.status(200).end();
         return;
