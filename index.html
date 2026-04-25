@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Nahwu AI — Amogenz × Santri</title>
+    <meta name="description" content="Aplikasi belajar Nahwu Shorof bertenaga AI. Analisa I'rob otomatis 8 langkah, latihan interaktif kitab  & Imrithi. Gratis untuk Santri. Powered by Amogenz.">
+    <meta name="keywords" content="Nahwu OS, Belajar I'rob, Aplikasi Nahwu, Jurumiyah, Imrithi, Shorof, Belajar Bahasa Arab, AI Nahwu, Irob Otomatis, Santri Coding, Amogenz, Nawhu pesantren, Nahwu santri, Nahwu Ai, Ai Nahwu, Shrof pesantren, Santri, Shorof Anak Pondok, Ai Nahwu Shorof, Nahwu Mudah">
+    <meta name="author" content="Amogenz.Inc">
+    <meta name="robots" content="index, follow">
+    <link rel="icon" type="image/webp" href="https://i.ibb.co.com/Qvwp0rVV/amogenz.webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Archivo+Black&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-noise"></div>
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-brand">
+            <span class="arabic-logo">نحو AI</span>
+            <span class="latin-logo">Nahwu AI — Amogenz</span>
+        </div>
+        <button class="btn-close-sidebar" id="btn-close-sidebar" aria-label="Tutup sidebar">
+            <i class="ph ph-x"></i>
+        </button>
+    </div>
+
+    <nav class="sidebar-nav">
+        <div class="nav-label">Menu</div>
+        <a href="#section-analisis" class="nav-item active" id="nav-analisis">
+            <i class="ph-fill ph-magic-wand"></i>
+            Analisis Nahwu & Shorof
+        </a>
+        <a href="#section-bio" class="nav-item" id="nav-bio">
+            <i class="ph-fill ph-book-open-text"></i>
+            Tentang Nahwu & Shorof
+        </a>
+
+        <div class="nav-label" style="margin-top:8px;">Panduan</div>
+        <a href="https://amogenz.xyz" target="_blank" style="text-decoration: none; color: inherit;">
+    <div class="nav-item">
+        <i class="ph ph-sparkle"></i> Tentang Amogenz
+    </div>
+</a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="collab-badge">
+            <div class="collab-text">Proyek kolaborasi antara</div>
+            <div class="collab-name">Amogenz × Para Santri</div>
+            <div class="collab-text" style="margin-top:4px;">
+                Teknologi AI untuk kemudahan belajar ilmu alat
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- TOP BAR -->
+<header class="topbar">
+    <button class="btn-hamburger" id="btn-hamburger" aria-label="Buka menu">
+        <i class="ph ph-list"></i>
+    </button>
+    <div class="topbar-center">
+        <div class="topbar-title">Nahwu AI</div>
+    </div>
+    <div class="topbar-right">
+        <div class="status-dot" title="AI Online"></div>
+    </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+    <!-- HERO -->
+    <div class="hero-banner">
+        <div class="hero-tag">
+            <i class="ph-fill ph-sparkle"></i>
+            Amogenz × Santri
+        </div>
+        <div class="hero-title">بِسْمِ اللهِ الرَّحْمٰنِ</div>
+        <p class="hero-desc">
+            Syarah otomatis berbasis AI untuk analisis <strong>Nahwu</strong> 
+            dan <strong>Shorof</strong> — lengkap dengan dalil dari Jurumiyyah, Imrithi, dan Alfiyyah.
+        </p>
+    </div>
+
+    <!-- ANALISIS CARD -->
+    <div class="card" id="section-analisis">
+        <div class="card-header">
+            <div class="card-icon"><i class="ph-fill ph-magic-wand"></i></div>
+            <div>
+                <div class="card-title">Analisis Lafadz</div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="arabic-input-wrap">
+                <input
+                    type="text"
+                    class="arabic-input"
+                    id="arabic-input"
+                    placeholder="قَامَ زَيْدٌ"
+                    autocomplete="off"
+                    autocorrect="off"
+                    spellcheck="false"
+                    dir="rtl"
+                >
+            </div>
+
+            <div class="input-meta">
+                <div class="word-counter" id="word-counter">
+                    <i class="ph ph-text-aa"></i>
+                    <span>0 / 7 kata</span>
+                </div>
+                <button class="btn-analyze" id="btn-analyze" disabled>
+                    <i class="ph ph-magic-wand"></i>
+                    Analisis
+                </button>
+            </div>
+
+            <div class="input-tips">
+                <i class="ph ph-lightbulb-filament"></i>
+                <p>
+                    Ketik kalimat Arab (maksimal 7 kata). Gunakan harakat untuk hasil yang lebih akurat. 
+                    Contoh: <strong>قَامَ زَيْدٌ الطَّالِبُ</strong>
+                </p>
+            </div>
+        </div>
+
+        <!-- LOADING -->
+        <div class="loading-area" id="loading-area">
+            <div class="loading-ring"></div>
+            <div class="loading-arabic">تَحْلِيلٌ...</div>
+            <div class="loading-text">Sedang menelaah kitab dan menyusun syarah...<br>Mohon bersabar sebentar.</div>
+        </div>
+    </div>
+
+    <!-- RESULT AREA -->
+    <div class="result-area" id="result-area">
+        <div class="result-topbar">
+            <div class="result-topbar-left">
+                <span class="result-label">Hasil Analisis</span>
+                <span class="result-input-display" id="result-input-display">—</span>
+            </div>
+            <div class="result-actions">
+                <span id="result-source-badge" class="source-badge badge-ai">
+                    <i class="ph-fill ph-brain"></i> AI
+                </span>
+                <button class="btn-action" id="btn-copy">
+                    <i class="ph ph-copy"></i> Salin
+                </button>
+            </div>
+        </div>
+        <div class="result-body">
+            <div class="syarah-content" id="syarah-content"></div>
+        </div>
+    </div>
+
+    <!-- BIOGRAPHY CARD -->
+    <div class="bio-card" id="section-bio">
+        <div class="card-header" style="padding-left:22px;">
+            <div class="card-icon" style="background:var(--primary-dim); color:var(--primary);">
+                <i class="ph-fill ph-book-open-text"></i>
+            </div>
+            <div>
+                <div class="card-title">Mengenal Nahwu & Shorof</div>
+            </div>
+        </div>
+        <div class="bio-tabs">
+            <div class="bio-tab active" data-tab="nahwu">Ilmu Nahwu</div>
+            <div class="bio-tab" data-tab="shorof">Ilmu Shorof</div>
+            <div class="bio-tab" data-tab="sejarah">Sejarah</div>
+        </div>
+
+        <div class="bio-panel active" id="tab-nahwu">
+            <div class="bio-arabic">اَلنَّحْوُ عِلْمٌ بِأُصُولٍ تُعْرَفُ بِهَا أَحْوَالُ الْكَلِمِ</div>
+            <div class="bio-text">
+                <p>
+                    <strong>Nahwu</strong> (النَّحْو) adalah ilmu yang membahas kaidah-kaidah perubahan 
+                    akhir kata dalam kalimat bahasa Arab (i'rab). Dengan ilmu ini, seorang santri 
+                    dapat membaca kitab kuning dengan tepat dan memahami kedudukan setiap kata.
+                </p>
+                <p>
+                    Ilmu Nahwu ibarat tulang punggung bahasa Arab. Tanpa Nahwu, seseorang 
+                    tidak bisa membedakan mana yang <strong>fa'il</strong> (pelaku), <strong>maf'ul</strong> (objek), 
+                    dan <strong>mubtada-khobar</strong> dalam sebuah kalimat.
+                </p>
+                <p>
+                    Kitab rujukan Nahwu yang terkenal di pesantren antara lain:
+                    <strong>Al-Jurumiyyah</strong> (tingkat pemula), <strong>Al-Imrithi</strong> (menengah), 
+                    dan <strong>Alfiyyah Ibn Malik</strong> (mahir — berisi 1000 bait syair kaidah Nahwu).
+                </p>
+            </div>
+        </div>
+
+        <div class="bio-panel" id="tab-shorof">
+            <div class="bio-arabic">اَلصَّرْفُ أُمُّ الْعُلُومِ وَالنَّحْوُ أَبُوهَا</div>
+            <div class="bio-text">
+                <p>
+                    <strong>Shorof</strong> (الصَّرْف) adalah ilmu yang membahas perubahan 
+                    bentuk kata (tasrif) — dari satu kata dasar, bisa lahir puluhan kata turunan 
+                    dengan makna berbeda-beda.
+                </p>
+                <p>
+                    Ada pepatah ulama: <em>"Shorof adalah ibu segala ilmu, Nahwu adalah bapaknya."</em>
+                    Shorof membahas bina' kata: apakah fi'il madhi, mudhari', amar, masdar, isim fa'il, 
+                    isim maf'ul, dan seterusnya.
+                </p>
+                <p>
+                    Penguasaan Shorof dimulai dari hafal <strong>tasrif istilahi</strong> (perubahan formal) 
+                    dan <strong>tasrif lughowi</strong> (perubahan menurut dhomir). Kitab Shorof yang 
+                    populer di pesantren adalah <strong>Al-Amtsilah At-Tashrifiyyah</strong> dan 
+                    <strong>Maqshud</strong>.
+                </p>
+            </div>
+        </div>
+
+        <div class="bio-panel" id="tab-sejarah">
+            <div class="bio-text">
+                <div class="bio-timeline">
+                    <div class="timeline-item">
+                        <span class="timeline-year">±100 H</span>
+                        <div class="timeline-desc">
+                            <strong>Abu Aswad Ad-Du'ali</strong> — ulama pertama yang meletakkan 
+                            dasar-dasar ilmu Nahwu atas perintah Sayyidina Ali bin Abi Thalib رضي الله عنه.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-year">~150 H</span>
+                        <div class="timeline-desc">
+                            Berkembang menjadi dua madrasah besar: <strong>Basrah</strong> dan 
+                            <strong>Kufah</strong>, masing-masing dengan metode dan kaidah tersendiri.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-year">180 H</span>
+                        <div class="timeline-desc">
+                            <strong>Sibawayhi</strong> menulis <em>Al-Kitab</em> — karya Nahwu terlengkap 
+                            dan paling berpengaruh sepanjang masa. Dijuluki "Qur'an-nya Nahwu".
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-year">672 H</span>
+                        <div class="timeline-desc">
+                            <strong>Ibn Malik</strong> mengarang <em>Alfiyyah</em> — 1002 bait syair 
+                            yang merangkum seluruh kaidah Nahwu dan Shorof. Menjadi kurikulum pesantren hingga hari ini.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-year">~720 H</span>
+                        <div class="timeline-desc">
+                            <strong>Ibnu Ajurrum</strong> menulis <em>Al-Jurumiyyah</em> — kitab ringkas 
+                            tapi padat yang menjadi gerbang pertama belajar Nahwu bagi jutaan santri di dunia.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="made-by">Nahwu AI</div>
+        <div>Proyek kolaborasi <strong>Amogenz × Para Santri</strong></div>
+        <div style="margin-top:4px;">Teknologi AI untuk kemudahan belajar ilmu alat</div>
+    </footer>
+
+</main>
+
+<script type="module" src="script.js"></script>
+
+</body>
+</html>
