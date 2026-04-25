@@ -1,9 +1,11 @@
 // api/analyze.js
-export default async function handler(req, res) {
-    // Izinkan domain spesifik kamu atau gunakan '*' untuk semua (termasuk Acode)
-    res.setHeader('Access-Control-Allow-Origin', '*'); 
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+export default async function handler(req) {
+    const corsHeaders = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
+        'Access-Control-Allow-Headers': 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Content-Type',
+        'Access-Control-Allow-Credentials': 'true',
+    };
 
     if (req.method === 'OPTIONS') {
         res.status(200).end();
