@@ -1,69 +1,49 @@
-// api/analyze.js
-export default async function handler(req, res) {
-    // 1. CORS Headers PERTAMA sebelum apapun
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
+// Logic NahwuAI - By Amogenz
+const axios = require('axios');
 
-    // 2. Handle OPTIONS preflight
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
+exports.handler = async (event) => {
+    if (event.httpMethod !== "POST") {
+        return { statusCode: 405, body: "Hanya menerima POST bray!" };
     }
-
-    // 3. Tolak selain POST
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
-
-    const { prompt } = req.body;
-    const GROQ_API_KEY = process.env.GROQ_API_KEY;
-
-    if (!GROQ_API_KEY) {
-        return res.status(500).json({ error: 'GROQ_API_KEY tidak ditemukan di environment variables.' });
-    }
-
-    // 4. Set streaming headers SEBELUM memanggil Groq
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.status(200);
 
     try {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
+        const { provider, modelId, messages } = JSON.parse(event.body);
+        
+        // Ambil Key dari Environment Variables (Dashboard Netlify)
+        const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
+        const GROQ_KEY = process.env.GROQ_API_KEY;
+
+        let apiUrl = "";
+        let apiKey = "";
+
+        if (provider === 'groq') {
+            apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
+            apiKey = GROQ_KEY;
+        } else {
+            apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
+            apiKey = OPENROUTER_KEY;
+        }
+
+        const response = await axios.post(apiUrl, {
+            model: modelId,
+            messages: messages,
+            temperature: 0.2
+        }, {
             headers: {
-                "Authorization": `Bearer ${GROQ_API_KEY}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
-                messages: [{ role: "user", content: prompt }],
-                temperature: 0.1,
-                max_tokens: 7000,
-                stream: true
-            })
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            }
         });
 
-        if (!response.ok) {
-            const errText = await response.text();
-            res.write(`data: ${JSON.stringify({ error: errText })}\n\n`);
-            res.end();
-            return;
-        }
-
-        // 5. Pipe stream dari Groq ke client
-        const reader = response.body.getReader();
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            res.write(value);
-        }
-        res.end();
+        return {
+            statusCode: 200,
+            body: JSON.stringify(response.data)
+        };
 
     } catch (error) {
-        res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
-        res.end();
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: error.response?.data?.error?.message || error.message })
+        };
     }
-}
+};
