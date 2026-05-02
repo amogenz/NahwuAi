@@ -1,8 +1,21 @@
 export default async function handler(req, res) {
-    // 1. Handle CORS & Method
+    // 1. Tambahkan Header CORS biar Acode bisa akses
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Mengizinkan semua domain
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    // Handle preflight request (Penting untuk CORS)
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
+    // 2. Handle Method Asli kamu
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Hanya menerima POST, Bray!' });
     }
+
+    // ... (lanjutkan dengan try-catch kamu yang sudah ada) ...
+
 
     try {
         const { provider, modelId, messages } = req.body;
