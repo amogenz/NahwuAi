@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function callLLM(messages, expectJson = false) {
     const { provider, modelId } = parseModel();
 
-    const res = await fetch('/api/analyze', {
+    const res = await fetch('https://nahwuai.amogenz.xyz/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
