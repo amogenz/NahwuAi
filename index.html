@@ -2,284 +2,464 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Nahwu AI — Amogenz × Santri</title>
-    <meta name="description" content="Aplikasi belajar Nahwu Shorof bertenaga AI. Analisa I'rob otomatis 8 langkah, latihan interaktif kitab  & Imrithi. Gratis untuk Santri. Powered by Amogenz.">
-    <meta name="keywords" content="Nahwu OS, Belajar I'rob, Aplikasi Nahwu, Jurumiyah, Imrithi, Shorof, Belajar Bahasa Arab, AI Nahwu, Irob Otomatis, Santri Coding, Amogenz, Nawhu pesantren, Nahwu santri, Nahwu Ai, Ai Nahwu, Shrof pesantren, Santri, Shorof Anak Pondok, Ai Nahwu Shorof, Nahwu Mudah">
-    <meta name="author" content="Amogenz.Inc">
-    <meta name="robots" content="index, follow">
-    <link rel="icon" type="image/webp" href="https://i.ibb.co.com/Qvwp0rVV/amogenz.webp">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Archivo+Black&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NahwuAI | Analisis Arab Jernih</title>
+<meta name="title" content="NahwuAI | Analisis Nahwu Shorof & I'rab Otomatis">
+<meta name="description" content="Alat bantu analisis gramatika Arab (Nahwu, Shorof, I'rab) berbasis AI. Solusi cerdas belajar kitab kuning, membedah kalimat, dan memahami kaidah bahasa Arab secara instan.">
+<meta name="keywords" content="nahwu ai, analisis nahwu, i'rab otomatis, belajar nahwu shorof, alat bantu kitab kuning, bahasa arab online, amogenz, cek i'rab, kaidah bahasa arab, nahwu shorof ai">
+<meta name="author" content="amogenz">
+<meta name="robots" content="index, follow">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nahwuai.amogenz.xyz/"> <meta property="og:title" content="NahwuAI | Analisis Nahwu Shorof & I'rab Otomatis">
+<meta property="og:description" content="Bedah kalimat bahasa Arab menggunakan AI. Cepat, jernih, dan sesuai kaidah kitab klasik.">
+<meta property="og:image" content="https://i.ibb.co.com/DDkjDMQC/20260502-070855.png">
+
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:title" content="NahwuAI | Analisis Nahwu Shorof & I'rab Otomatis">
+<meta property="twitter:description" content="Solusi cerdas bedah gramatika Arab secara instan dengan teknologi AI.">
+<meta property="twitter:image" content="https://i.ibb.co.com/DDkjDMQC/20260502-070855.png">
+
+     <link rel="icon" type="image/webp" href="https://i.ibb.co.com/DDkjDMQC/20260502-070855.png">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:wght@600;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="bg-orb bg-orb-1"></div>
-<div class="bg-orb bg-orb-2"></div>
-<div class="bg-noise"></div>
-<div class="cursor-dot" id="cursor-dot"></div>
-<div class="cursor-ring" id="cursor-ring"></div>
+<!-- ══ SIDEBAR OVERLAY ══ -->
+<div id="sidebar-overlay"></div>
 
-<!-- OVERLAY -->
-<div class="overlay" id="overlay"></div>
-
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
+<!-- ══ SIDEBAR ══ -->
+<div id="sidebar">
     <div class="sidebar-header">
-        <div class="sidebar-brand">
-            <span class="arabic-logo">نحو AI</span>
-            <span class="latin-logo">Nahwu AI — Amogenz</span>
-        </div>
-        <button class="btn-close-sidebar" id="btn-close-sidebar" aria-label="Tutup sidebar">
-            <i class="ph ph-x"></i>
+        <span class="sidebar-title">📚 Ensiklopedia <span>Nahwu</span></span>
+        <button id="sidebar-close" title="Tutup">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
         </button>
     </div>
 
-    <nav class="sidebar-nav">
-        <div class="nav-label">Menu</div>
-        <a href="#section-analisis" class="nav-item active" id="nav-analisis">
-            <i class="ph-fill ph-magic-wand"></i>
-            Analisis Nahwu & Shorof
-        </a>
-        <a href="#section-bio" class="nav-item" id="nav-bio">
-            <i class="ph-fill ph-book-open-text"></i>
-            Tentang Nahwu & Shorof
-        </a>
+    <div class="sidebar-body">
+        <div class="sb-tabs">
+            <button class="sb-tab active" data-tab="sejarah">Sejarah</button>
+            <button class="sb-tab" data-tab="nahwu">Nahwu</button>
+            <button class="sb-tab" data-tab="shorof">Shorof</button>
+            <button class="sb-tab" data-tab="irab">I'rab</button>
+        </div>
 
-        <div class="nav-label" style="margin-top:8px;">Panduan</div>
-        <a href="https://amogenz.xyz" target="_blank" style="text-decoration: none; color: inherit;">
-    <div class="nav-item">
-        <i class="ph ph-sparkle"></i> Tentang Amogenz
-    </div>
-</a>
+        <!-- PANEL: SEJARAH -->
+        <div class="sb-panel active" id="sbpanel-sejarah">
+            <div class="sb-chapter">
+                <div class="sb-chapter-label">Asal Usul Ilmu Nahwu</div>
 
-    </nav>
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title">
+                            <span class="sb-arabic">أَبُو الْأَسْوَدِ الدُّؤَلِي</span>
+                        </div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p><strong>Abu al-Aswad al-Du'ali</strong> (w. 688 M / 69 H) adalah ulama Basrah yang secara luas diakui sebagai <strong>peletak dasar ilmu Nahwu</strong>. Beliau seorang sahabat Imam Ali bin Abi Thalib radhiyallahu 'anhu.</p>
+                        <div class="sb-qaidah"><strong>Latar belakang:</strong> Merebaknya kesalahan baca Al-Qur'an di kalangan non-Arab mendorong perlunya kaidah gramatika yang baku.</div>
+                        <p style="margin-top:.55rem">Konon Imam Ali sendiri yang memberi panduan awal — membagi kalimat menjadi <em>isim, fi'il, dan harf</em> — lalu Abu al-Aswad mengembangkannya menjadi sistem kaidah tertulis.</p>
+                    </div>
+                </div>
+
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title">
+                            <span class="sb-arabic">مَدْرَسَةُ الْبَصْرَةِ</span>
+                            <span class="sb-indo">Mazhab Basrah</span>
+                        </div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p>Mazhab Basrah (~abad ke-2 H) menekankan <strong>qiyas</strong> (analogi logis) sebagai metode utama dalam menetapkan kaidah. Tokoh utamanya antara lain <strong>Sibawaih</strong> (w. ~180 H) yang menulis <em>Al-Kitab</em> — ensiklopedi Nahwu paling monumental sepanjang sejarah.</p>
+                    </div>
+                </div>
+
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title">
+                            <span class="sb-arabic">مَدْرَسَةُ الْكُوفَةِ</span>
+                            <span class="sb-indo">Mazhab Kufah</span>
+                        </div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p>Mazhab Kufah lebih fleksibel, menerima <strong>sima'</strong> (riwayat pemakaian bahasa Arab asli) secara luas meskipun jarang digunakan. Tokoh terkemukanya adalah <strong>al-Kisa'i</strong> dan <strong>al-Farra'</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title">
+                            <span class="sb-arabic">سِيبَوَيْهِ</span>
+                            <span class="sb-indo">Sibawaih — Imam Nahwu</span>
+                        </div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p>Nama lengkap: <strong>Amr bin Utsman bin Qanbar al-Bishri</strong>, lahir di Persia sekitar 140 H. Wafat ~180 H. Karyanya <em>Al-Kitab</em> menjadi rujukan utama nahwu hingga kini. Beliau murid al-Khalil bin Ahmad al-Farahidi.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sb-chapter">
+                <div class="sb-chapter-label">Kitab-Kitab Kunci Nahwu</div>
+
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title">
+                            <span class="sb-arabic">الْآجُرُّومِيَّة</span>
+                            <span class="sb-indo">Al-Jurumiyyah</span>
+                        </div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p>Ditulis oleh <strong>Muhammad bin Dawud al-Shinhaji (Ibnu Ajurrum)</strong>, wafat 723 H / 1323 M di Maroko. Matan ringkas untuk pemula, menjadi standar pondok pesantren di seluruh dunia Islam.</p>
+                    </div>
+                </div>
+
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title">
+                            <span class="sb-arabic">الْعِمْرِيطِي</span>
+                            <span class="sb-indo">Al-Imriti (Nazham Jurumiyyah)</span>
+                        </div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p>Karya <strong>Syarif al-Din Yahya al-Imriti</strong> (w. ~890 H), berupa nazham (syair) atas matan Jurumiyyah. Digunakan di pesantren sebagai tahap menengah setelah Jurumiyyah.</p>
+                    </div>
+                </div>
+
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title">
+                            <span class="sb-arabic">الْأَلْفِيَّة</span>
+                            <span class="sb-indo">Alfiyyah Ibnu Malik</span>
+                        </div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p>Karya <strong>Ibnu Malik al-Andalusi</strong> (w. 672 H / 1274 M), berisi 1002 bait syair yang merangkum seluruh kaidah Nahwu dan Shorof. Tingkat tertinggi dalam kajian nahwu klasik.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sb-chapter">
+                <div class="sb-chapter-label">Ilmu Shorof</div>
+
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title">
+                            <span class="sb-arabic">نَشْأَةُ الصَّرْف</span>
+                            <span class="sb-indo">Asal Usul Shorof</span>
+                        </div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p>Shorof awalnya merupakan bagian dari ilmu Nahwu. Baru pada abad ke-3 H mulai dipisahkan menjadi disiplin tersendiri. <strong>Al-Mazini</strong> (w. 248 H) dan <strong>Mubarrad</strong> (w. 285 H) dianggap pelopor sistematisasinya.</p>
+                        <div class="sb-qaidah"><strong>Kitab rujukan shorof pesantren:</strong> Amtsilati (KH. Taufiqul Hakim), Tashrif al-'Izzi, al-Maqshud.</div>
+                    </div>
+                </div>
+
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title">
+                            <span class="sb-arabic">الصَّرْفُ أُمُّ الْعُلُوم</span>
+                            <span class="sb-indo">Shorof Ibunya Ilmu</span>
+                        </div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p>Para ulama menyebut Shorof sebagai <em>"ibunya ilmu-ilmu"</em> karena tanpa menguasai perubahan bentuk kata, seseorang tak bisa memahami makna Al-Qur'an, Hadits, maupun kitab-kitab Arab secara benar.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sb-chapter">
+                <div class="sb-chapter-label">Tentang Proyek Ini</div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title">
+                            <span class="sb-arabic">NahwuAI</span>
+                            <span class="sb-indo">by amogenz</span>
+                        </div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p>NahwuAI adalah fork dan modifikasi dari <a href="https://nahwuai.netlify.app/" target="_blank">nahwuai.netlify.app</a>, dikembangkan ulang oleh <strong>amogenz</strong> dengan tambahan multi-model AI, ensiklopedia, dan desain ulang menyeluruh.</p>
+                        <p style="margin-top:.45rem">Kode sumber tersedia di <a href="https://github.com/amogenz" target="_blank">github.com/amogenz</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /sbpanel-sejarah -->
+
+        <!-- PANEL: NAHWU KAIDAH -->
+        <div class="sb-panel" id="sbpanel-nahwu">
+            <div class="sb-chapter">
+                <div class="sb-chapter-label">Pembagian Kalimat</div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title"><span class="sb-arabic">الِاسْمُ</span><span class="sb-indo">Isim — Kata Benda</span></div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p>Kata yang menunjukkan makna pada dirinya sendiri, tidak terikat waktu. Tanda: menerima tanwin, ال, jar, dan nida'.</p>
+                        <div class="sb-contoh"><div class="sb-contoh-arabic">كِتَابٌ — مَسْجِدٌ — مُحَمَّدٌ</div><div class="sb-contoh-note">Buku — Masjid — Muhammad</div></div>
+                    </div>
+                </div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title"><span class="sb-arabic">الفِعْلُ</span><span class="sb-indo">Fi'il — Kata Kerja</span></div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p>Kata yang terikat dengan waktu: madhi (lampau), mudhari' (kini/akan datang), amr (perintah).</p>
+                        <div class="sb-contoh"><div class="sb-contoh-arabic">ذَهَبَ — يَذْهَبُ — اِذْهَبْ</div><div class="sb-contoh-note">Telah pergi — sedang/akan pergi — pergilah</div></div>
+                    </div>
+                </div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title"><span class="sb-arabic">الحَرْفُ</span><span class="sb-indo">Harf — Partikel</span></div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p>Tidak bermakna sempurna kecuali bersama kata lain. Tidak menerima tanda isim maupun fi'il.</p>
+                        <div class="sb-contoh"><div class="sb-contoh-arabic">فِي — مِنْ — إِلَى — وَ — لَمْ</div><div class="sb-contoh-note">Di — Dari — Ke — Dan — Tidak (lampau)</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="sb-chapter">
+                <div class="sb-chapter-label">Jumlah (Kalimat)</div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title"><span class="sb-arabic">الْجُمْلَةُ الِاسْمِيَّةُ</span><span class="sb-indo">Kalimat Nominal</span></div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p>Diawali isim. Terdiri dari <strong>mubtada'</strong> (rafa') + <strong>khabar</strong> (rafa').</p>
+                        <div class="sb-contoh"><div class="sb-contoh-arabic">الْكِتَابُ جَدِيْدٌ</div><div class="sb-contoh-note">Buku itu baru</div></div>
+                    </div>
+                </div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header">
+                        <div class="sb-entry-title"><span class="sb-arabic">الْجُمْلَةُ الْفِعْلِيَّةُ</span><span class="sb-indo">Kalimat Verbal</span></div>
+                        <svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="sb-entry-body">
+                        <p>Diawali fi'il. Susunan: <strong>fi'il + fa'il</strong> (rafa') + maf'ul bih (nasab, opsional).</p>
+                        <div class="sb-contoh"><div class="sb-contoh-arabic">ذَهَبَ الطَّالِبُ إِلَى الْمَسْجِدِ</div><div class="sb-contoh-note">Pelajar itu pergi ke masjid</div></div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /sbpanel-nahwu -->
+
+        <!-- PANEL: SHOROF -->
+        <div class="sb-panel" id="sbpanel-shorof">
+            <div class="sb-chapter">
+                <div class="sb-chapter-label">Wazan Tsulatsi Mujarrad</div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header"><div class="sb-entry-title"><span class="sb-arabic">فَعَلَ — يَفْعُلُ</span><span class="sb-indo">Wazan 1</span></div><svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></div>
+                    <div class="sb-entry-body"><div class="sb-contoh"><div class="sb-contoh-arabic">نَصَرَ — يَنْصُرُ — نَصْرًا</div><div class="sb-contoh-note">Menolong (madhi — mudhari' — masdar)</div></div></div>
+                </div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header"><div class="sb-entry-title"><span class="sb-arabic">فَعَلَ — يَفْعِلُ</span><span class="sb-indo">Wazan 2</span></div><svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></div>
+                    <div class="sb-entry-body"><div class="sb-contoh"><div class="sb-contoh-arabic">ضَرَبَ — يَضْرِبُ — ضَرْبًا</div><div class="sb-contoh-note">Memukul</div></div></div>
+                </div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header"><div class="sb-entry-title"><span class="sb-arabic">فَعِلَ — يَفْعَلُ</span><span class="sb-indo">Wazan 4</span></div><svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></div>
+                    <div class="sb-entry-body"><div class="sb-contoh"><div class="sb-contoh-arabic">عَلِمَ — يَعْلَمُ — عِلْمًا</div><div class="sb-contoh-note">Mengetahui</div></div></div>
+                </div>
+            </div>
+            <div class="sb-chapter">
+                <div class="sb-chapter-label">Mazid (Tambahan Huruf)</div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header"><div class="sb-entry-title"><span class="sb-arabic">فَعَّلَ</span><span class="sb-indo">Bab II — Intensitas</span></div><svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></div>
+                    <div class="sb-entry-body"><div class="sb-contoh"><div class="sb-contoh-arabic">كَسَّرَ — عَلَّمَ</div><div class="sb-contoh-note">Memecah-mecah — Mengajarkan</div></div></div>
+                </div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header"><div class="sb-entry-title"><span class="sb-arabic">أَفْعَلَ</span><span class="sb-indo">Bab IV — Menjadikan</span></div><svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></div>
+                    <div class="sb-entry-body"><div class="sb-contoh"><div class="sb-contoh-arabic">أَخْرَجَ — أَكْرَمَ</div><div class="sb-contoh-note">Mengeluarkan — Memuliakan</div></div></div>
+                </div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header"><div class="sb-entry-title"><span class="sb-arabic">اِسْتَفْعَلَ</span><span class="sb-indo">Bab X — Meminta</span></div><svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></div>
+                    <div class="sb-entry-body"><div class="sb-contoh"><div class="sb-contoh-arabic">اِسْتَغْفَرَ — اِسْتَعْمَلَ</div><div class="sb-contoh-note">Meminta ampun — Menggunakan</div></div></div>
+                </div>
+            </div>
+        </div><!-- /sbpanel-shorof -->
+
+        <!-- PANEL: I'RAB -->
+        <div class="sb-panel" id="sbpanel-irab">
+            <div class="sb-chapter">
+                <div class="sb-chapter-label">Empat Tanda I'rab</div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header"><div class="sb-entry-title"><span class="sb-arabic">الرَّفْعُ</span><span class="sb-indo">Rafa' — Dhammah</span></div><svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></div>
+                    <div class="sb-entry-body">
+                        <p>Tanda asli: dhammah. Posisi: mubtada', khabar, fa'il, naibul fa'il, isim kana, khabar inna.</p>
+                        <div class="sb-contoh"><div class="sb-contoh-arabic">جَاءَ الطَّالِبُ</div><div class="sb-contoh-note">الطالب = fa'il, marfu' dengan dhammah</div></div>
+                    </div>
+                </div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header"><div class="sb-entry-title"><span class="sb-arabic">النَّصْبُ</span><span class="sb-indo">Nasab — Fathah</span></div><svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></div>
+                    <div class="sb-entry-body">
+                        <p>Tanda asli: fathah. Posisi: maf'ul bih, maf'ul mutlaq, hal, tamyiz, isim inna, khabar kana.</p>
+                        <div class="sb-contoh"><div class="sb-contoh-arabic">قَرَأْتُ الْكِتَابَ</div><div class="sb-contoh-note">الكتاب = maf'ul bih, manshub dengan fathah</div></div>
+                    </div>
+                </div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header"><div class="sb-entry-title"><span class="sb-arabic">الْجَرُّ</span><span class="sb-indo">Jar — Kasrah</span></div><svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></div>
+                    <div class="sb-entry-body">
+                        <p>Khusus isim. Tanda asli: kasrah. Penyebab: huruf jar, mudhaf ilaih, tabi' isim majrur.</p>
+                        <div class="sb-contoh"><div class="sb-contoh-arabic">ذَهَبَ إِلَى الْمَسْجِدِ</div><div class="sb-contoh-note">المسجد = majrur dengan kasrah sebab إلى</div></div>
+                    </div>
+                </div>
+                <div class="sb-entry">
+                    <div class="sb-entry-header"><div class="sb-entry-title"><span class="sb-arabic">الْجَزْمُ</span><span class="sb-indo">Jazm — Sukun</span></div><svg class="sb-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></div>
+                    <div class="sb-entry-body">
+                        <p>Khusus fi'il mudhari'. Tanda asli: sukun. Penyebab: لَمْ، لَا النَّاهِيَة، إِنْ الشرطية.</p>
+                        <div class="sb-contoh"><div class="sb-contoh-arabic">لَمْ يَذْهَبْ</div><div class="sb-contoh-note">يذهب = majzum dengan sukun sebab لم</div></div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /sbpanel-irab -->
+
+    </div><!-- /sidebar-body -->
 
     <div class="sidebar-footer">
-        <div class="collab-badge">
-            <div class="collab-text">Proyek kolaborasi antara</div>
-            <div class="collab-name">Amogenz × Para Santri</div>
-            <div class="collab-text" style="margin-top:4px;">
-                Teknologi AI untuk kemudahan belajar ilmu alat
-            </div>
-        </div>
+        NahwuAI terinspirasi dari <a href="https://nahwuai.netlify.app/" target="_blank">nahwuai.netlify.app</a><br>
+        Dikembangkan oleh <a href="https://github.com/amogenz" target="_blank">amogenz</a> · GitHub
     </div>
-</aside>
+</div><!-- /sidebar -->
 
-<!-- TOP BAR -->
-<header class="topbar">
-    <button class="btn-hamburger" id="btn-hamburger" aria-label="Buka menu">
-        <i class="ph ph-list"></i>
-    </button>
-    <div class="topbar-center">
-        <div class="topbar-title">Nahwu AI</div>
+<!-- ══ MODAL ══ -->
+<div id="startup-modal">
+    <div class="modal-box">
+        <div class="modal-icon">📜</div>
+        <h2>Peringatan!</h2>
+        <p>Website ini masih dalam tahap pengembangan. Tingkat keakuratan sekitar 20–61,1%. Mohon maaf jika ada analisis yang meleset.</p>
+        <button id="close-modal-btn">Oke, Saya Mengerti</button>
     </div>
-    <div class="topbar-right">
-        <div class="status-dot" title="AI Online"></div>
+</div>
+
+<!-- ══ HEADER ══ -->
+<header>
+    <div class="header-inner">
+        <a href="#" class="logo">Nahwu<em>AI</em></a>
+        <div class="header-right">
+            <nav>
+                <a href="#about">Tentang</a>
+            </nav>
+            <button id="hamburger" title="Ensiklopedia">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
     </div>
 </header>
 
-<!-- MAIN CONTENT -->
-<main class="main">
+<!-- ══ MAIN ══ -->
+<main>
+    <section class="hero">
+        <span class="hero-eyebrow">Alat Bantu Gramatika Arab</span>
+        <h1>Pusat Analisis <span>Bahasa Arab</span></h1>
+        <p>Membedah Nahwu, Shorof, dan I'rab sesuai kaidah kitab kuning — walau 20% akurat mungkin 😏</p>
+    </section>
 
-    <!-- HERO -->
-    <div class="hero-banner">
-        <div class="hero-tag">
-            <i class="ph-fill ph-sparkle"></i>
-            Amogenz × Santri
+    <section id="app-section" class="card">
+
+        <!-- Model bar -->
+        <div class="model-bar">
+            <span class="model-bar-label">Model AI</span>
+            <select id="model-select">
+                <optgroup label="OpenRouter">
+                    <option value="openrouter:google/gemma-4-31b-it">Gemma 31b</option>
+                    <option value="openrouter:openai/gpt-oss-120b">Gpt 120b</option>
+                </optgroup>
+<optgroup label="Groq">
+    <option value="groq:llama-3.3-70b-versatile">Llama 3.3 70B (Groq) ⚡</option>
+    <option value="groq:llama-3.1-8b-instant">Llama 3.1 8B — Cepat (Groq)</option>
+</optgroup>
+                </optgroup>
+            </select>
+            <span id="model-badge" class="model-badge badge-openrouter">OpenRouter</span>
         </div>
-        <div class="hero-title">بِسْمِ اللهِ الرَّحْمٰنِ</div>
-        <p class="hero-desc">
-            Syarah otomatis berbasis AI untuk analisis <strong>Nahwu</strong> 
-            dan <strong>Shorof</strong> — lengkap dengan dalil dari Jurumiyyah, Imrithi, dan Alfiyyah.
-        </p>
-    </div>
 
-    <!-- ANALISIS CARD -->
-    <div class="card" id="section-analisis">
-        <div class="card-header">
-            <div class="card-icon"><i class="ph-fill ph-magic-wand"></i></div>
-            <div>
-                <div class="card-title">Analisis Lafadz</div>
-            </div>
-        </div>
-        <div class="card-body">
-            <div class="arabic-input-wrap">
-                <input
-                    type="text"
-                    class="arabic-input"
-                    id="arabic-input"
-                    placeholder="قَامَ زَيْدٌ"
-                    autocomplete="off"
-                    autocorrect="off"
-                    spellcheck="false"
-                    dir="rtl"
-                >
-            </div>
-
-            <div class="input-meta">
-                <div class="word-counter" id="word-counter">
-                    <i class="ph ph-text-aa"></i>
-                    <span>0 / 7 kata</span>
-                </div>
-                <button class="btn-analyze" id="btn-analyze" disabled>
-                    <i class="ph ph-magic-wand"></i>
-                    Analisis
-                </button>
-            </div>
-
-            <div class="input-tips">
-                <i class="ph ph-lightbulb-filament"></i>
-                <p>
-                    Ketik kalimat Arab (maksimal 7 kata). Gunakan harakat untuk hasil yang lebih akurat. 
-                    Contoh: <strong>قَامَ زَيْدٌ الطَّالِبُ</strong>
-                </p>
+        <!-- Step 1 -->
+        <div id="step-1" class="step">
+            <p class="step-title">Tuliskan Kalimat Arab</p>
+            <p class="step-sub">Masukkan kalimat Arab yang ingin dianalisis.</p>
+            <textarea id="arabic-text" placeholder="مثال: الكتاب جديد" rows="4"></textarea>
+            <div class="btn-row">
+                <button id="example-btn" class="btn btn-ghost">🎲 Contoh Acak</button>
+                <button id="analyze-btn" class="btn btn-primary">Gasskeun Analisis →</button>
             </div>
         </div>
 
-        <!-- LOADING -->
-        <div class="loading-area" id="loading-area">
-            <div class="loading-ring"></div>
-            <div class="loading-arabic">تَحْلِيلٌ...</div>
-            <div class="loading-text">Sedang menelaah kitab dan menyusun syarah...<br>Mohon bersabar sebentar.</div>
-        </div>
-    </div>
-
-    <!-- RESULT AREA -->
-    <div class="result-area" id="result-area">
-        <div class="result-topbar">
-            <div class="result-topbar-left">
-                <span class="result-label">Hasil Analisis</span>
-                <span class="result-input-display" id="result-input-display">—</span>
+        <!-- Step 2 -->
+        <div id="step-2" class="step hidden">
+            <p class="step-title">Fokuskan Analisis</p>
+            <p class="step-sub">Pilih jenis analisis yang ingin dilihat secara mendalam.</p>
+            <div class="options-grid">
+                <button class="opt-btn opt-main option-btn" data-type="all">✦ Semua (Lengkap)</button>
+                <button class="opt-btn opt-outline option-btn" data-type="nahwu">Nahwu</button>
+                <button class="opt-btn opt-outline option-btn" data-type="shorof">Shorof</button>
+                <button class="opt-btn opt-outline option-btn" data-type="irab">I'rab</button>
             </div>
-            <div class="result-actions">
-                <span id="result-source-badge" class="source-badge badge-ai">
-                    <i class="ph-fill ph-brain"></i> AI
-                </span>
-                <button class="btn-action" id="btn-copy">
-                    <i class="ph ph-copy"></i> Salin
-                </button>
-            </div>
-        </div>
-        <div class="result-body">
-            <div class="syarah-content" id="syarah-content"></div>
-        </div>
-    </div>
-
-    <!-- BIOGRAPHY CARD -->
-    <div class="bio-card" id="section-bio">
-        <div class="card-header" style="padding-left:22px;">
-            <div class="card-icon" style="background:var(--primary-dim); color:var(--primary);">
-                <i class="ph-fill ph-book-open-text"></i>
-            </div>
-            <div>
-                <div class="card-title">Mengenal Nahwu & Shorof</div>
-            </div>
-        </div>
-        <div class="bio-tabs">
-            <div class="bio-tab active" data-tab="nahwu">Ilmu Nahwu</div>
-            <div class="bio-tab" data-tab="shorof">Ilmu Shorof</div>
-            <div class="bio-tab" data-tab="sejarah">Sejarah</div>
+            <button class="back-btn" data-step="1">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+                Ubah Teks
+            </button>
         </div>
 
-        <div class="bio-panel active" id="tab-nahwu">
-            <div class="bio-arabic">اَلنَّحْوُ عِلْمٌ بِأُصُولٍ تُعْرَفُ بِهَا أَحْوَالُ الْكَلِمِ</div>
-            <div class="bio-text">
-                <p>
-                    <strong>Nahwu</strong> (النَّحْو) adalah ilmu yang membahas kaidah-kaidah perubahan 
-                    akhir kata dalam kalimat bahasa Arab (i'rab). Dengan ilmu ini, seorang santri 
-                    dapat membaca kitab kuning dengan tepat dan memahami kedudukan setiap kata.
-                </p>
-                <p>
-                    Ilmu Nahwu ibarat tulang punggung bahasa Arab. Tanpa Nahwu, seseorang 
-                    tidak bisa membedakan mana yang <strong>fa'il</strong> (pelaku), <strong>maf'ul</strong> (objek), 
-                    dan <strong>mubtada-khobar</strong> dalam sebuah kalimat.
-                </p>
-                <p>
-                    Kitab rujukan Nahwu yang terkenal di pesantren antara lain:
-                    <strong>Al-Jurumiyyah</strong> (tingkat pemula), <strong>Al-Imrithi</strong> (menengah), 
-                    dan <strong>Alfiyyah Ibn Malik</strong> (mahir — berisi 1000 bait syair kaidah Nahwu).
-                </p>
+        <!-- Step 3 -->
+        <div id="step-3" class="step hidden">
+            <p class="step-title">Hasil Pembedahan Kata</p>
+            <p class="step-sub">Tap salah satu kata untuk melihat detail analisanya.</p>
+            <div id="loading">
+                <div class="spinner"></div>
+                <span>AI sedang bekerja… Sabar sebentar.</span>
             </div>
+            <div id="analysis-output"></div>
+            <button class="back-btn" data-step="2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+                Ubah Pilihan
+            </button>
         </div>
 
-        <div class="bio-panel" id="tab-shorof">
-            <div class="bio-arabic">اَلصَّرْفُ أُمُّ الْعُلُومِ وَالنَّحْوُ أَبُوهَا</div>
-            <div class="bio-text">
-                <p>
-                    <strong>Shorof</strong> (الصَّرْف) adalah ilmu yang membahas perubahan 
-                    bentuk kata (tasrif) — dari satu kata dasar, bisa lahir puluhan kata turunan 
-                    dengan makna berbeda-beda.
-                </p>
-                <p>
-                    Ada pepatah ulama: <em>"Shorof adalah ibu segala ilmu, Nahwu adalah bapaknya."</em>
-                    Shorof membahas bina' kata: apakah fi'il madhi, mudhari', amar, masdar, isim fa'il, 
-                    isim maf'ul, dan seterusnya.
-                </p>
-                <p>
-                    Penguasaan Shorof dimulai dari hafal <strong>tasrif istilahi</strong> (perubahan formal) 
-                    dan <strong>tasrif lughowi</strong> (perubahan menurut dhomir). Kitab Shorof yang 
-                    populer di pesantren adalah <strong>Al-Amtsilah At-Tashrifiyyah</strong> dan 
-                    <strong>Maqshud</strong>.
-                </p>
+        <!-- Step 4 -->
+        <div id="step-4" class="step hidden">
+            <div class="detail-header">
+                <h2>Detail Kata</h2>
+                <span id="selected-word-display"></span>
             </div>
+            <div id="dalil-output"></div>
+            <button class="back-btn" data-step="3">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+                Kembali ke Hasil
+            </button>
         </div>
 
-        <div class="bio-panel" id="tab-sejarah">
-            <div class="bio-text">
-                <div class="bio-timeline">
-                    <div class="timeline-item">
-                        <span class="timeline-year">±100 H</span>
-                        <div class="timeline-desc">
-                            <strong>Abu Aswad Ad-Du'ali</strong> — ulama pertama yang meletakkan 
-                            dasar-dasar ilmu Nahwu atas perintah Sayyidina Ali bin Abi Thalib رضي الله عنه.
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <span class="timeline-year">~150 H</span>
-                        <div class="timeline-desc">
-                            Berkembang menjadi dua madrasah besar: <strong>Basrah</strong> dan 
-                            <strong>Kufah</strong>, masing-masing dengan metode dan kaidah tersendiri.
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <span class="timeline-year">180 H</span>
-                        <div class="timeline-desc">
-                            <strong>Sibawayhi</strong> menulis <em>Al-Kitab</em> — karya Nahwu terlengkap 
-                            dan paling berpengaruh sepanjang masa. Dijuluki "Qur'an-nya Nahwu".
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <span class="timeline-year">672 H</span>
-                        <div class="timeline-desc">
-                            <strong>Ibn Malik</strong> mengarang <em>Alfiyyah</em> — 1002 bait syair 
-                            yang merangkum seluruh kaidah Nahwu dan Shorof. Menjadi kurikulum pesantren hingga hari ini.
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <span class="timeline-year">~720 H</span>
-                        <div class="timeline-desc">
-                            <strong>Ibnu Ajurrum</strong> menulis <em>Al-Jurumiyyah</em> — kitab ringkas 
-                            tapi padat yang menjadi gerbang pertama belajar Nahwu bagi jutaan santri di dunia.
-                        </div>
-                    </div>
-                </div>
-            </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="card">
+        <h2>Tentang NahwuAI</h2>
+        <p>Alat bantu analisis Nahwu, Shorof, dan I'rab berbasis AI. Terinspirasi dan dimodifikasi dari <a href="https://nahwuai.netlify.app/" target="_blank" style="color:var(--emerald);text-decoration:none">nahwuai.netlify.app</a>. Proyek ini menggabungkan kaidah gramatika Arab klasik dengan model AI modern untuk membantu para pelajar kitab kuning.</p>
+        <div class="dev-card">
+            <h3>amogenz</h3>
+            <p>Pengembang kue 🍰 · <a href="https://github.com/amogenz" target="_blank">github.com/amogenz</a></p>
         </div>
-    </div>
-
-    <footer class="footer">
-        <div class="made-by">Nahwu AI</div>
-        <div>Proyek kolaborasi <strong>Amogenz × Para Santri</strong></div>
-        <div style="margin-top:4px;">Teknologi AI untuk kemudahan belajar ilmu alat</div>
-    </footer>
-
+    </section>
 </main>
 
-<script type="module" src="script.js"></script>
+<footer>
+    <div class="footer-inner">
+        <p>&copy; 2026 NahwuAI · by <a href="https://amogenz.xyz/" target="_blank">Amogenz</a></p>
+    </div>
+</footer>
 
+<script src="script.js"></script>
 </body>
 </html>
