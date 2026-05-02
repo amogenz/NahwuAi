@@ -1,4 +1,9 @@
 
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('splash-screen').classList.add('hide');
+  }, 1900);
+});
 
 document.addEventListener('DOMContentLoaded', () => {
 

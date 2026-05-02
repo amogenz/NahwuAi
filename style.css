@@ -399,3 +399,24 @@
     footer p + p { margin-top:.22rem; font-size:.68rem; color:rgba(255,255,255,.22); }
     footer a { color:rgba(255,255,255,.55); text-decoration:none; transition:color .2s; }
     footer a:hover { color:#fff; }
+    #splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #0d1117;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+}
+#splash-screen.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+#splash-screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: fixed;
+  inset: 0;
+}
