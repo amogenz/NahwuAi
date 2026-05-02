@@ -1,419 +1,463 @@
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // ===== FIREBASE CONFIG =====
-    const firebaseConfig = {
-        apiKey: "AIzaSyBDyEfe83-_CzRchqcO_lLnuO6Rg9_AF_8",
-        authDomain: "amogenz.firebaseapp.com",
-        databaseURL: "https://amogenz-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "amogenz",
-        storageBucket: "amogenz.firebasestorage.app",
-        messagingSenderId: "864003468268",
-        appId: "1:864003468268:web:7c861806529a0dacd66ec9"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+document.addEventListener('DOMContentLoaded', () => {
 
-    // ===== SIDEBAR =====
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    const btnHamburger = document.getElementById('btn-hamburger');
-    const btnCloseSidebar = document.getElementById('btn-close-sidebar');
+    /* ── Modal ── */
+    const modal = document.getElementById('startup-modal');
+    setTimeout(() => modal.classList.add('visible'), 120);
+    document.getElementById('close-modal-btn')
+        .addEventListener('click', () => modal.classList.remove('visible'));
+
+    /* ── Sidebar ── */
+    const sidebar        = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const hamburger      = document.getElementById('hamburger');
+    const sidebarClose   = document.getElementById('sidebar-close');
 
     function openSidebar() {
         sidebar.classList.add('open');
-        overlay.classList.add('active');
+        sidebarOverlay.classList.add('visible');
         document.body.style.overflow = 'hidden';
     }
-
     function closeSidebar() {
         sidebar.classList.remove('open');
-        overlay.classList.remove('active');
+        sidebarOverlay.classList.remove('visible');
         document.body.style.overflow = '';
     }
+    hamburger.addEventListener('click', openSidebar);
+    sidebarClose.addEventListener('click', closeSidebar);
+    sidebarOverlay.addEventListener('click', closeSidebar);
 
-    btnHamburger.addEventListener('click', openSidebar);
-    btnCloseSidebar.addEventListener('click', closeSidebar);
-    overlay.addEventListener('click', closeSidebar);
-
-    // Nav items close sidebar + scroll
-    document.querySelectorAll('.nav-item[href]').forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            closeSidebar();
-            const target = document.querySelector(item.getAttribute('href'));
-            if (target) setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
-        });
-    });
-
-    // ===== BIO TABS =====
-    document.querySelectorAll('.bio-tab').forEach(tab => {
+    /* Sidebar tabs */
+    document.querySelectorAll('.sb-tab').forEach(tab => {
         tab.addEventListener('click', () => {
-            document.querySelectorAll('.bio-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.bio-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sb-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.sb-panel').forEach(p => p.classList.remove('active'));
             tab.classList.add('active');
-            document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+            document.getElementById(`sbpanel-${tab.dataset.tab}`).classList.add('active');
         });
     });
 
-    // ===== HELPERS =====
+    /* Sidebar accordion */
+    document.querySelectorAll('.sb-entry-header').forEach(h => {
+        h.addEventListener('click', () => h.closest('.sb-entry').classList.toggle('open'));
+    });
+
+    /* ── Model selector badge ── */
+    const modelSelect = document.getElementById('model-select');
+    const modelBadge  = document.getElementById('model-badge');
+    function updateBadge() {
+        const isGroq = modelSelect.value.startsWith('groq:');
+        modelBadge.textContent = isGroq ? 'Groq' : 'OpenRouter';
+        modelBadge.className   = 'model-badge ' + (isGroq ? 'badge-groq' : 'badge-openrouter');
+    }
+    modelSelect.addEventListener('change', updateBadge);
+    updateBadge();
+
+    /* ── App elements ── */
+    const steps               = document.querySelectorAll('.step');
+    const analyzeBtn          = document.getElementById('analyze-btn');
+    const arabicTextarea      = document.getElementById('arabic-text');
+    const loadingDiv          = document.getElementById('loading');
+    const analysisOutput      = document.getElementById('analysis-output');
+    const dalilOutput         = document.getElementById('dalil-output');
+    const selectedWordDisplay = document.getElementById('selected-word-display');
+
+    /* ── State ── */
+    let currentAnalysisData = null;
+    let selectedWord        = null;
+    let currentAnalysisType = 'all';
+
+    /* ════════════════════════════════════════
+       HELPERS
+    ════════════════════════════════════════ */
+
+    function showStep(n) {
+        steps.forEach(s => s.classList.add('hidden'));
+        document.getElementById(`step-${n}`).classList.remove('hidden');
+    }
+
     function isArabic(text) { return /[\u0600-\u06FF]/.test(text); }
 
-    function createCacheKey(text) {
-        const clean = text.replace(/[\u064B-\u065F]/g, "").trim().replace(/\s+/g, '_');
-        return btoa(unescape(encodeURIComponent(clean))).replace(/[/+=]/g, "");
+    function clean(text) {
+        return (text || '')
+            .replace(/<think>[\s\S]*?<\/think>/gi, '')
+            .replace(/\*\*/g, '')
+            .replace(/_{1,2}/g, '')
+            .trim();
     }
 
-    // ===== INPUT LOGIC =====
-    const inputEl = document.getElementById('arabic-input');
-    const btnAnalyze = document.getElementById('btn-analyze');
-    const wordCounter = document.getElementById('word-counter');
+    /* ════════════════════════════════════════
+       MULTI-MODEL API 
+    ════════════════════════════════════════ */
 
-    inputEl.addEventListener('input', () => {
-        const text = inputEl.value;
-        const words = text.trim() === '' ? [] : text.trim().split(/\s+/).filter(w => w.length > 0);
-        const count = words.length;
-
-        wordCounter.querySelector('span').textContent = `${count} / 7 kata`;
-        wordCounter.className = 'word-counter' + (count > 7 ? ' warn' : count > 0 ? ' ok' : '');
-
-        btnAnalyze.disabled = !(isArabic(text) && count > 0 && count <= 7);
-    });
-
-    // ===== RENDER RESULT =====
-    const KEY_NAMES = {
-        1: 'Jenis',
-        2: 'Alasan Jenis',
-        3: 'Status',
-        4: 'Alasan Status',
-        5: "I'rob",
-        6: "Alasan I'rob",
-        7: "Tanda I'rob",
-        8: 'Alasan Tanda',
-        9: "Bina'",
-        10: 'Shighot',
-        11: 'Tasrif'
-    };
-
-    function escHtml(s) {
-        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    function parseModel() {
+        const val = modelSelect.value;
+        const idx = val.indexOf(':');
+        return { provider: val.slice(0, idx), modelId: val.slice(idx + 1) };
     }
 
-    function formatVal(raw) {
-        // Bold markdown
-        let s = raw.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        // Wrap Arabic sequences with .ar class for proper font + direction
-        s = s.replace(/([\u0600-\u06FF\u064B-\u065F\s]+)/g, (m) => {
-            const clean = m.trim();
-            if (!clean) return m;
-            if (/[\u0600-\u06FF]/.test(clean)) return ` <span class="ar">${clean}</span> `;
-            return m;
-        });
-        return s.trim();
-    }
+    async function callLLM(messages, expectJson = false) {
+        const { provider, modelId } = parseModel();
 
-    /**
-     * Parse raw AI text into array of lafadz objects.
-     * Works incrementally — safe to call during streaming.
-     * Each lafadz: { arabic, points: [{num, key, val}] }
-     */
-    function parseText(text) {
-        const lafadzList = [];
-
-        // Split on === LAFADZ: ... === or just === LAFADZ: ... (no closing ===)
-        // Pattern: start of a lafadz section
-        const headerRegex = /===\s*LAFADZ\s*:\s*([^\n=]+?)(?:\s*===)?\s*\n/gi;
-
-        const matches = [...text.matchAll(headerRegex)];
-        if (!matches.length) return null; // still streaming preamble
-
-        matches.forEach((match, i) => {
-            const arabic = match[1].trim();
-            const startIdx = match.index + match[0].length;
-            const endIdx = i + 1 < matches.length ? matches[i + 1].index : text.length;
-            const body = text.slice(startIdx, endIdx);
-
-            // Parse numbered points from body
-            // Strategy: collect lines, merge continuation lines into the last point
-            const lines = body.split('\n');
-            const points = [];
-            let currentPoint = null;
-
-            for (const rawLine of lines) {
-                const line = rawLine.trimEnd();
-                if (!line.trim()) continue;
-
-                // Numbered point: "1. Key: value" or "1. Key :" or "1. value"
-                const numMatch = line.match(/^\s*(\d{1,2})\.\s*(.+)/);
-                if (numMatch) {
-                    const num = parseInt(numMatch[1]);
-                    const rest = numMatch[2];
-
-                    // Check if rest has "Key: value" pattern
-                    const colonIdx = rest.indexOf(':');
-                    let key = KEY_NAMES[num] || `Poin ${num}`;
-                    let val = '';
-
-                    if (colonIdx !== -1) {
-                        const beforeColon = rest.slice(0, colonIdx).trim();
-                        const afterColon = rest.slice(colonIdx + 1).trim();
-                        // If beforeColon is very short or matches key pattern, treat as key
-                        if (beforeColon.length < 30) {
-                            // Use AI's own key label as fallback if not in our map
-                            key = KEY_NAMES[num] || beforeColon || key;
-                            val = afterColon;
-                        } else {
-                            val = rest; // whole thing is value
-                        }
-                    } else {
-                        val = rest;
-                    }
-
-                    currentPoint = { num, key, val };
-                    points.push(currentPoint);
-                } else if (currentPoint && line.trim()) {
-                    // Continuation of previous point — append
-                    currentPoint.val += ' ' + line.trim();
-                }
-            }
-
-            lafadzList.push({ arabic, points, wordNum: i + 1 });
+        // Panggil ke API internal milik kita sendiri
+        const res = await fetch('/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                provider,   // 'groq' atau 'openrouter'
+                modelId,    // id model asli
+                messages,
+                expectJson
+            }),
         });
 
-        return lafadzList;
-    }
-
-    function buildHtml(lafadzList, isStreaming) {
-        let html = '';
-        lafadzList.forEach(({ arabic, points, wordNum }) => {
-            let rowsHtml = '';
-            points.forEach(({ num, key, val }) => {
-                if (!val.trim()) return;
-                rowsHtml += `
-                <div class="lc-row">
-                    <div class="lc-num"><div class="lc-num-inner">${num}</div></div>
-                    <div class="lc-key">${escHtml(key)}</div>
-                    <div class="lc-sep">:</div>
-                    <div class="lc-val">${formatVal(escHtml(val))}</div>
-                </div>`;
-            });
-
-            const streamingIndicator = isStreaming && wordNum === lafadzList.length
-                ? `<div class="stream-placeholder"><div class="stream-dot"></div>Sedang menyusun analisis...</div>`
-                : '';
-
-            html += `
-            <div class="lafadz-card">
-                <div class="lc-header">
-                    <div class="lc-arabic">${escHtml(arabic)}</div>
-                    <div class="lc-badge">Lafadz ${wordNum}</div>
-                </div>
-                <div class="lc-body">
-                    ${rowsHtml || '<div class="stream-placeholder"><div class="stream-dot"></div>Menganalisis...</div>'}
-                    ${streamingIndicator}
-                </div>
-            </div>`;
-        });
-        return html;
-    }
-
-    function renderResult(text, isStreaming = false) {
-        const content = document.getElementById('syarah-content');
-        const parsed = parseText(text);
-
-        if (!parsed) {
-            // AI hasn't output first header yet — show live typing indicator
-            content.innerHTML = `<div class="stream-placeholder"><div class="stream-dot"></div>Memproses teks Arab...</div>`;
-            return;
+        if (!res.ok) {
+            const errData = await res.json();
+            throw new Error(errData.error || `HTTP ${res.status}`);
         }
 
-        content.innerHTML = buildHtml(parsed, isStreaming);
+        const data = await res.json();
+        let text = data.choices?.[0]?.message?.content || '';
+        text = clean(text);
+
+        if (!expectJson) return text;
+
+        /* Parsing JSON Robust */
+        text = text.replace(/^```[\w]*\n?/m, '').replace(/```$/m, '').trim();
+        const start = text.indexOf('[');
+        const end = text.lastIndexOf(']');
+        if (start === -1 || end === -1) throw new Error("Format JSON tidak valid dari AI");
+        
+        return JSON.parse(text.slice(start, end + 1));
     }
 
-    // ===== MAIN ANALYSIS =====
-    async function analyze() {
-        const input = inputEl.value.trim();
-        if (!input) return;
+    /* ════════════════════════════════════════
+       PROMPTS
+    ════════════════════════════════════════ */
 
-        btnAnalyze.disabled = true;
-        document.getElementById('result-area').style.display = 'none';
-        document.getElementById('loading-area').style.display = 'flex';
-        document.getElementById('syarah-content').innerHTML = '';
-        document.getElementById('result-input-display').textContent = input;
+    async function fetchAnalysis(text) {
+        const messages = [
+            {
+                role: 'system',
+                content: 'Kamu adalah pakar Nahwu dan Shorof Arab klasik. Balas HANYA dengan JSON array murni, tanpa kalimat pembuka/penutup, tanpa markdown fences.'
+            },
+            {
+                role: 'user',
+                content: `Analisislah setiap kata dalam teks Arab berikut. Kembalikan JSON array. Setiap elemen memiliki field:
+"word": kata Arab aslinya
+"nahwu": penjelasan nahwu (B.Indonesia)
+"shorof": penjelasan wazan/shorof (B.Indonesia)
+"irab": penjelasan i'rab lengkap (B.Indonesia)
+"hasDalil": boolean
+"dalilTopic": string singkat B.Inggris, misal "isim_marfu"
+"dalilQuestions": array 3 pertanyaan nahwu (B.Indonesia)
+"dalilOptions": array opsi dalil spesifik
 
-        const cacheKey = createCacheKey(input);
-        const cacheRef = ref(db, `syarah_cache/${cacheKey}`);
+Teks: ${text}`
+            }
+        ];
+        return callLLM(messages, true);
+    }
+
+    async function fetchDalil(topic, source) {
+        const messages = [
+            { role: 'system', content: 'Kamu pakar kitab kuning. Jawab langsung tanpa kalimat pembuka atau penutup apapun.' },
+            { role: 'user',   content: `Berikan dalil dari kitab Nahwu ${source} yang relevan dengan kaidah "${topic}". Tulis teks Arab aslinya dulu, lalu terjemahannya dalam Bahasa Indonesia.` }
+        ];
+        return callLLM(messages, false);
+    }
+
+    async function fetchAnswer(question) {
+        const messages = [
+            { role: 'system', content: 'Pakar nahwu. Jawab singkat dan jelas dalam Bahasa Indonesia. Tanpa format bold atau asterisk.' },
+            { role: 'user',   content: `Konteks kaidah nahwu: ${question}` }
+        ];
+        return callLLM(messages, false);
+    }
+
+    /* ════════════════════════════════════════
+       RENDER HELPERS
+    ════════════════════════════════════════ */
+
+    function makeInfoCard(label, content, accentColor) {
+        const card = document.createElement('div');
+        card.className = 'info-card';
+        const color = accentColor || 'var(--emerald)';
+        card.innerHTML = `
+            <div class="info-card-header">
+                <span class="info-card-dot" style="background:${color}"></span>
+                <span class="info-card-label" style="color:${color}">${label}</span>
+            </div>
+            <div class="info-card-body">${clean(content)}</div>`;
+        return card;
+    }
+
+    function parseDalilOutput(text, source) {
+        const lines = clean(text).split('\n').map(l => l.trim()).filter(Boolean);
+        let arabic = '', rest = '';
+        for (let i = 0; i < lines.length; i++) {
+            if (/[\u0600-\u06FF]/.test(lines[i]) && lines[i].length > 3) {
+                arabic = lines[i];
+                rest   = lines.slice(i + 1).join(' ').trim();
+                break;
+            }
+        }
+        if (!arabic) return `<span class="dalil-source-label">Dalil dari ${source}</span><p>${clean(text)}</p>`;
+        return `<span class="dalil-source-label">Dalil dari Kitab ${source}</span>
+                <div class="dalil-arabic">${arabic}</div>
+                <p class="dalil-translation"><strong>Terjemahan:</strong> ${rest || '—'}</p>`;
+    }
+
+    async function loadDalil(topic, source, container) {
+        container.innerHTML = `<div style="display:flex;align-items:center;gap:.5rem;color:var(--gold)"><div class="spinner" style="border-top-color:var(--gold)"></div>Mencari dari ${source}…</div>`;
+        try {
+            const result = await fetchDalil(topic, source);
+            container.innerHTML = parseDalilOutput(result, source);
+        } catch(e) {
+            container.innerHTML = `<p style="color:var(--red);font-size:.85rem">Gagal: ${e.message}</p>`;
+        }
+    }
+
+    function buildKitabButtons(topic, container) {
+        container.innerHTML = `<p class="dalil-section-title" style="margin-bottom:.45rem">Pilih kitab untuk <em>${clean(topic).replace(/_/g,' ')}</em></p>
+            <div class="tag-row">
+                ${['Jurumiyah','Imriti','Alfiyah'].map(s =>
+                    `<button class="tag-btn tag-gold" data-source="${s}" data-topic="${topic}">${s}</button>`
+                ).join('')}
+            </div>`;
+        container.querySelectorAll('.tag-btn').forEach(b => {
+            b.addEventListener('click', () => loadDalil(b.dataset.topic, b.dataset.source, container));
+        });
+    }
+
+    /* ════════════════════════════════════════
+       WORD CHIP
+    ════════════════════════════════════════ */
+
+    function createWordChip(item) {
+        const chip = document.createElement('span');
+        chip.className = 'word-chip';
+        chip.textContent = item.word;
+        chip.dataset.analysis = JSON.stringify(item);
+        chip.addEventListener('click', () => selectWord(chip));
+        return chip;
+    }
+
+    /* ════════════════════════════════════════
+       SELECT WORD → build step 4
+    ════════════════════════════════════════ */
+
+    function selectWord(el) {
+        if (selectedWord) selectedWord.classList.remove('selected');
+        selectedWord = el;
+        el.classList.add('selected');
+
+        const data = JSON.parse(el.dataset.analysis);
+        selectedWordDisplay.textContent = data.word;
+        dalilOutput.innerHTML = '';
+
+        const all    = currentAnalysisType === 'all';
+        const doN    = all || currentAnalysisType === 'nahwu';
+        const doS    = all || currentAnalysisType === 'shorof';
+        const doI    = all || currentAnalysisType === 'irab';
+
+        if (data.nahwu  && doN) dalilOutput.appendChild(makeInfoCard('Nahwu',  data.nahwu));
+        if (data.shorof && doS) dalilOutput.appendChild(makeInfoCard('Shorof', data.shorof));
+        if (data.irab   && doI) dalilOutput.appendChild(makeInfoCard("I'rab",  data.irab, 'var(--gold)'));
+
+        /* ── Dalil card ── */
+        if (data.hasDalil) {
+            const opts = new Set(data.dalilOptions || []);
+            const nl = (data.nahwu  || '').toLowerCase();
+            const sl = (data.shorof || '').toLowerCase();
+            ['isim jamid','isim mufrad','isim alam','isim mudzakkar','isim muannats','isim marifah','isim nakirah']
+                .forEach(k => { if (nl.includes(k)) opts.add(k); });
+            if (nl.includes('isim')  || sl.includes('isim'))  opts.add('isim');
+            if (nl.includes('fiil')  || sl.includes('fiil'))  opts.add('fiil');
+            if (nl.includes('huruf') || sl.includes('huruf')) opts.add('huruf');
+            const optArr = Array.from(opts);
+
+            const dalilCard = document.createElement('div');
+            dalilCard.className = 'info-card';
+            dalilCard.innerHTML = `<div class="info-card-header">
+                <span class="info-card-dot" style="background:var(--gold)"></span>
+                <span class="info-card-label" style="color:var(--gold)">Dalil Kaidah</span>
+            </div>`;
+
+            const dBody = document.createElement('div');
+            dBody.className = 'info-card-body';
+            dBody.style.display = 'flex';
+            dBody.style.flexDirection = 'column';
+            dBody.style.gap = '.65rem';
+
+            const dalilContent = document.createElement('div');
+            dalilContent.id = 'dalil-content';
+            dalilContent.innerHTML = '<span style="color:var(--muted);font-size:.84rem">Pilih dalil di atas.</span>';
+
+            if (optArr.length) {
+                const wrap = document.createElement('div');
+                wrap.innerHTML = `<p class="dalil-section-title">Pilih jenis dalil</p>`;
+                const row = document.createElement('div');
+                row.className = 'tag-row';
+                row.style.marginTop = '.35rem';
+                optArr.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'tag-btn tag-gold';
+                    btn.textContent = opt.replace(/_/g,' ');
+                    btn.addEventListener('click', () => buildKitabButtons(opt.replace(/\s/g,'_'), dalilContent));
+                    row.appendChild(btn);
+                });
+                wrap.appendChild(row);
+                dBody.appendChild(wrap);
+            } else {
+                buildKitabButtons(data.dalilTopic || 'nahwu', dalilContent);
+            }
+
+            dBody.appendChild(dalilContent);
+            dalilCard.appendChild(dBody);
+            dalilOutput.appendChild(dalilCard);
+
+            /* ── Questions card ── */
+            if (data.dalilQuestions?.length) {
+                const qCard = document.createElement('div');
+                qCard.className = 'info-card';
+                qCard.innerHTML = `<div class="info-card-header">
+                    <span class="info-card-dot"></span>
+                    <span class="info-card-label">Pertanyaan Lanjutan</span>
+                </div>`;
+                const qBody = document.createElement('div');
+                qBody.className = 'info-card-body';
+                qBody.style.display = 'flex';
+                qBody.style.flexDirection = 'column';
+                qBody.style.gap = '.6rem';
+
+                const row = document.createElement('div');
+                row.className = 'tag-row';
+                const chatArea = document.createElement('div');
+                chatArea.className = 'chat-wrap';
+
+                data.dalilQuestions.forEach(q => {
+                    const btn = document.createElement('button');
+                    btn.className = 'tag-btn tag-teal';
+                    btn.textContent = clean(q);
+                    btn.addEventListener('click', () => askQuestion(q, chatArea));
+                    row.appendChild(btn);
+                });
+
+                qBody.appendChild(row);
+                qBody.appendChild(chatArea);
+                qCard.appendChild(qBody);
+                dalilOutput.appendChild(qCard);
+            }
+
+        } else {
+            const noD = document.createElement('div');
+            noD.className = 'no-dalil';
+            noD.textContent = 'Tidak ada dalil spesifik untuk kaidah ini.';
+            dalilOutput.appendChild(noD);
+        }
+
+        showStep(4);
+    }
+
+    async function askQuestion(question, chatArea) {
+        const uBubble = document.createElement('div');
+        uBubble.className = 'chat-bubble user';
+        uBubble.innerHTML = `<strong>Saya:</strong> ${clean(question)}`;
+        chatArea.appendChild(uBubble);
+
+        const loadBubble = document.createElement('div');
+        loadBubble.className = 'chat-bubble ai';
+        loadBubble.innerHTML = `<div style="display:flex;align-items:center;gap:.4rem"><div class="spinner"></div>Menjawab…</div>`;
+        chatArea.appendChild(loadBubble);
+        chatArea.scrollTop = chatArea.scrollHeight;
 
         try {
-            // Check cache
-            const snapshot = await get(cacheRef);
-            if (snapshot.exists()) {
-                const cached = snapshot.val();
-                document.getElementById('loading-area').style.display = 'none';
-                document.getElementById('result-area').style.display = 'block';
-                document.getElementById('result-source-badge').innerHTML = '<i class="ph-fill ph-database"></i> Cache';
-                document.getElementById('result-source-badge').className = 'source-badge badge-cache';
-                renderResult(cached.result);
-                document.getElementById('result-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                return;
-            }
-
-            // Build prompt
-            const prompt = `Analisis kalimat Arab berikut per lafadz dengan sangat detail sesuai kaidah ilmu Nahwu dan Shorof:
-Kalimat: ${input}
-
-Berikan analisis mendalam untuk SETIAP kata dengan format persis seperti ini (WAJIB LENGKAP sampai poin 11):
-
-=== LAFADZ: [kata arab] ===
-1. Jenis: [Isim/Fi'il/Huruf]
-2. Alasan Jenis: [tanda-tanda beserta dalil dari Jurumiyyah/Imrithi/Alfiyyah jika ada]
-3. Status: [Mu'rob/Mabni]
-4. Alasan Status: [kenapa mu'rob atau mabni, beserta dalil jika ada]
-5. I'robnya: [Rafa'/Nashab/Jarr/Jazm/Mabni]
-6. Alasan I'rob: [karena menjadi apa dalam kalimat, beserta dalil jika ada]
-7. Tanda I'rob: [Dhammah/Fathah/Kasroh/Ya'/Alif/Nun dll]
-8. Alasan Tanda: [isim mufrad/asmaul khomsah/af'alul khomsah dll, beserta dalil jika ada]
-9. Bina': [jika mabni: mabni 'ala apa; jika fi'il: bina' shohih/mu'tal dll]
-10. Shighot: [jenis shorof: madhi/mudhari'/amar/masdar/isim fa'il/isim maf'ul dll]
-11. Tasrif: [penjelasan tasrif istilahi dan lughowi, asal kata, perubahan bentuk]
-
-PENTING: Selesaikan analisis SEMUA kata hingga poin 11. Jangan potong di tengah. Gunakan Bahasa Indonesia yang mudah dipahami santri.`;
-
-       // Ganti dengan URL Vercel kamu (contoh: https://amogenz.vercel.app/api/analyze)
-        // --- AUTO DETECT: Production vs Local (Acode/localhost) ---
-const isLocal = location.hostname === 'localhost' 
-    || location.hostname === '127.0.0.1' 
-    || location.protocol === 'file:';
-
-let resp;
-if (isLocal) {
-    // ACODE / LOCAL: Panggil Groq langsung (hardcode key untuk dev only)
-    const GROQ_API_KEY_LOCAL = "gsk_XXXXXXXXXXXXXXXXXXXXXXXX"; // ← ganti API key kamu di sini
-    resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${GROQ_API_KEY_LOCAL}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
-            messages: [{ role: "user", content: prompt }],
-            temperature: 0.1,
-            max_tokens: 7000,
-            stream: true
-        })
-    });
-} else {
-    // PRODUCTION: Pakai proxy Vercel (API key aman di server)
-    const VERCEL_PROXY_URL = "https://ai-nahwu.amogenz.xyz/api/analyze";
-    resp = await fetch(VERCEL_PROXY_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: prompt })
-    });
-}
-
-
-            if (!resp.ok) throw new Error("Gagal terhubung ke AI. Coba lagi.");
-
-            document.getElementById('loading-area').style.display = 'none';
-            document.getElementById('result-area').style.display = 'block';
-            document.getElementById('result-source-badge').innerHTML = '<i class="ph-fill ph-brain"></i> AI';
-            document.getElementById('result-source-badge').className = 'source-badge badge-ai';
-            document.getElementById('result-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-
-            const reader = resp.body.getReader();
-            const decoder = new TextDecoder();
-            let cumulative = '';
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                const chunk = decoder.decode(value, { stream: true });
-                const lines = chunk.split('\n'); // Split data per baris
-
-                for (const line of lines) {
-                    const trimmedLine = line.trim();
-                    if (!trimmedLine || !trimmedLine.startsWith('data: ')) continue;
-
-                    const raw = trimmedLine.replace('data: ', '');
-                    if (raw === '[DONE]') break;
-
-                    try {
-                        const parsed = JSON.parse(raw);
-                        const token = parsed.choices[0]?.delta?.content;
-                        if (token) {
-                            cumulative += token;
-                            renderResult(cumulative, true);
-                        }
-                    } catch (e) {
-                        console.debug("Menunggu potongan data lengkap...");
-                    }
-                }
-            }
-
-            // Render terakhir tanpa indikator loading
-            renderResult(cumulative, false);
-
-
-            // Save to Firebase
-            if (cumulative.length > 50) {
-                renderResult(cumulative, false); // final clean render
-                await set(cacheRef, {
-                    original_input: input,
-                    result: cumulative,
-                    created_at: Date.now()
-                });
-            }
-
-        } catch (err) {
-            document.getElementById('loading-area').style.display = 'none';
-            document.getElementById('syarah-content').innerHTML = `
-                <div style="padding:24px; color:#ff4d4d; text-align:center;">
-                    <i class="ph ph-warning-circle" style="font-size:2rem;"></i>
-                    <p style="margin-top:8px;">${err.message}</p>
-                </div>`;
-            document.getElementById('result-area').style.display = 'block';
-        } finally {
-            btnAnalyze.disabled = false;
+            const ans = await fetchAnswer(question);
+            loadBubble.innerHTML = `<strong>NahwuAI:</strong> ${clean(ans)}`;
+        } catch(e) {
+            loadBubble.innerHTML = `<span style="color:var(--red)">Gagal: ${e.message}</span>`;
         }
+        chatArea.scrollTop = chatArea.scrollHeight;
     }
 
-    btnAnalyze.addEventListener('click', analyze);
-    inputEl.addEventListener('keypress', e => {
-        if (e.key === 'Enter' && !btnAnalyze.disabled) analyze();
+    /* ════════════════════════════════════════
+       DISPLAY ANALYSIS (step 3)
+    ════════════════════════════════════════ */
+
+    function displayAnalysis(data) {
+        analysisOutput.innerHTML = '';
+        if (!Array.isArray(data) || !data.length) {
+            analysisOutput.innerHTML = '<span style="color:var(--muted);font-size:.88rem">Tidak ada kata yang berhasil dianalisis.</span>';
+            return;
+        }
+        data.forEach(item => analysisOutput.appendChild(createWordChip(item)));
+    }
+
+    /* ════════════════════════════════════════
+       EVENT LISTENERS
+    ════════════════════════════════════════ */
+
+    analyzeBtn.addEventListener('click', async () => {
+        const text = arabicTextarea.value.trim();
+        if (!text)           { alert('Masukkan teks bahasa Arab terlebih dahulu!'); return; }
+        if (!isArabic(text)) { alert('Teks yang dimasukkan bukan bahasa Arab.'); return; }
+
+        showStep(3);
+        analysisOutput.innerHTML = '';
+        loadingDiv.classList.add('visible');
+
+        const { provider } = parseModel();
+        const start = Date.now();
+        const timer = setInterval(() => {
+            const s = Math.floor((Date.now() - start) / 1000);
+            loadingDiv.querySelector('span').textContent =
+                `${provider === 'groq' ? 'Groq' : 'OpenRouter'} sedang memproses… (${s}s)`;
+        }, 1000);
+
+        try {
+            const result = await fetchAnalysis(text);
+            currentAnalysisData = result;
+            clearInterval(timer);
+            loadingDiv.classList.remove('visible');
+            showStep(2);
+        } catch(err) {
+            clearInterval(timer);
+            loadingDiv.classList.remove('visible');
+            analysisOutput.innerHTML = `<span style="color:var(--red);font-size:.88rem">Error: ${err.message}</span>`;
+            showStep(3);
+        }
     });
 
-    // Copy button
-    document.getElementById('btn-copy').addEventListener('click', () => {
-        const text = document.getElementById('syarah-content').innerText;
-        navigator.clipboard.writeText(text).then(() => {
-            const btn = document.getElementById('btn-copy');
-            btn.innerHTML = '<i class="ph ph-check"></i> Tersalin!';
-            setTimeout(() => btn.innerHTML = '<i class="ph ph-copy"></i> Salin', 2000);
+    document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentAnalysisType = btn.dataset.type;
+            if (!currentAnalysisData?.length) { alert('Data analisis kosong.'); return; }
+            displayAnalysis(currentAnalysisData);
+            showStep(3);
         });
     });
 
-    // ===== CUSTOM CURSOR =====
-    const dot  = document.getElementById('cursor-dot');
-    const ring = document.getElementById('cursor-ring');
-    if (dot && ring) {
-        let mx = -100, my = -100, rx = -100, ry = -100;
-        document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-        (function animate() {
-            rx += (mx - rx) * 0.18;
-            ry += (my - ry) * 0.18;
-            dot.style.left  = mx + 'px';
-            dot.style.top   = my + 'px';
-            ring.style.left = rx + 'px';
-            ring.style.top  = ry + 'px';
-            requestAnimationFrame(animate);
-        })();
-        document.querySelectorAll('button, a, input, [class*="btn"], .nav-item, .bio-tab').forEach(el => {
-            el.addEventListener('mouseenter', () => ring.style.transform = 'translate(-50%,-50%) scale(1.6)');
-            el.addEventListener('mouseleave', () => ring.style.transform = 'translate(-50%,-50%) scale(1)');
-        });
-    }
+    document.querySelectorAll('.back-btn').forEach(btn => {
+        btn.addEventListener('click', () => showStep(btn.dataset.step));
+    });
+
+    showStep(1);
+});
+
+/* ── Contoh Acak ── */
+const EXAMPLES = [
+    'الحمد لله رب العالمين',
+    'هذا كتاب جديد',
+    'ذهب الطالب إلى المسجد',
+    'محمد رسول الله',
+    'القرآن الكريم',
+    'إِنَّ اللهَ مَعَ الصَّابِرِينَ',
+    'طَلَبُ الْعِلْمِ فَرِيضَةٌ',
+];
+
+document.getElementById('example-btn').addEventListener('click', () => {
+    document.getElementById('arabic-text').value =
+        EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+});
