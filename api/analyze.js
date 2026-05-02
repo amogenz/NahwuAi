@@ -1,29 +1,26 @@
 // Logic NahwuAI - By Amogenz
 const axios = require('axios');
 
-exports.handler = async (event) => {
-    if (event.httpMethod !== "POST") {
-        return { statusCode: 405, body: "Hanya menerima POST bray!" };
+export default async function handler(req, res) {
+    // 1. Cek Method
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Hanya menerima POST bray!' });
     }
 
     try {
-        const { provider, modelId, messages } = JSON.parse(event.body);
+        const { provider, modelId, messages } = req.body;
         
-        // Ambil Key dari Environment Variables (Dashboard Netlify)
+        // 2. Ambil Key dari Environment Vercel
         const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
         const GROQ_KEY = process.env.GROQ_API_KEY;
 
-        let apiUrl = "";
-        let apiKey = "";
+        let apiUrl = provider === 'groq' 
+            ? 'https://api.groq.com/openai/v1/chat/completions' 
+            : 'https://openrouter.ai/api/v1/chat/completions';
+        
+        let apiKey = provider === 'groq' ? GROQ_KEY : OPENROUTER_KEY;
 
-        if (provider === 'groq') {
-            apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
-            apiKey = GROQ_KEY;
-        } else {
-            apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
-            apiKey = OPENROUTER_KEY;
-        }
-
+        // 3. Tembak ke AI
         const response = await axios.post(apiUrl, {
             model: modelId,
             messages: messages,
@@ -35,15 +32,12 @@ exports.handler = async (event) => {
             }
         });
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify(response.data)
-        };
+        // 4. Balikin hasil ke frontend
+        return res.status(200).json(response.data);
 
     } catch (error) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: error.response?.data?.error?.message || error.message })
-        };
+        return res.status(500).json({ 
+            error: error.response?.data?.error?.message || error.message 
+        });
     }
-};
+}
