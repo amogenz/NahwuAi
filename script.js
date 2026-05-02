@@ -98,24 +98,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function callLLM(messages, expectJson = false) {
-        const { provider, modelId } = parseModel();
+    const { provider, modelId } = parseModel();
 
-        // Panggil ke API internal milik kita sendiri
-        const res = await fetch('/api/analyze', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                provider,   // 'groq' atau 'openrouter'
-                modelId,    // id model asli
-                messages,
-                expectJson
-            }),
-        });
+    const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            provider,
+            modelId,
+            messages,
+            expectJson
+        }),
+    });
 
-        if (!res.ok) {
-            const errData = await res.json();
-            throw new Error(errData.error || `HTTP ${res.status}`);
-        }
+    if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || `HTTP ${res.status}`);
+    }
 
         const data = await res.json();
         let text = data.choices?.[0]?.message?.content || '';
